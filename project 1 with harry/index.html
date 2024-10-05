@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Fitness Club</title>
+</head>
+<link  href="https://fonts.google.com/css?family=Baloo+Bhai&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+    body {
+        font-family: 'Baloo Bhai' , cursive;
+        color: white;
+        margin: 0px;
+        padding: 0px;
+        background: url('img/gym.jpg');
+    }
+    .left {
+        display: inline-block;
+        /* border: 2px solid red; */
+        position: fixed;
+        left: 60px;
+        top: 20px;
+    }
+
+    .mid {
+        display: block;
+        width: 36%;
+        margin: 29px auto;
+        /* border: 2px solid blue; */
+    }
+
+    .right {
+        /* border: 2px solid yellow; */
+        display: inline-block;
+        position: fixed;
+        right: 34px;
+        top: 43px
+    }
+
+    .navbar {
+        
+        display: inline-block;
+    }
+
+    .navbar li {
+        
+        display: inline-block;
+
+    }
+
+    .navbar li a {
+
+        color: white;
+        text-decoration: none;
+        padding: 34px 20px;
+    }
+
+    .navbar li a:hover {
+        text-decoration: underline;
+        color: gray;
+    }
+
+    .left img {
+        width: 77px;
+        filter: invert(80%);
+    }
+
+    .left div {
+        line-height: 19px;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .btn {
+        font-family: 'Baloo Bhai' , cursive;
+        margin: 0px 4px;
+        color: white;
+        background-color: black;
+        padding: 4px 14px;
+        border: 2px solid grey;
+        border-radius: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: midnightblue;
+    }
+    .container{
+        border: 2px solid white;
+        margin: 106px 80px;
+        padding: 75px;
+        width: 33%;
+        border-radius: 28px;
+    }
+    .form-group input{
+        font-family: 'Baloo Bhai' , cursive;
+        text-align: center;
+        display: block;
+        width: 508px;
+        padding: 1px;
+        border: 2px solid black;
+        margin: 11px auto;
+        font-size: 25px;
+        border-radius: 8px;
+    }
+    .container h1{
+        text-align: center;
+    }
+    .container button{
+        display: block;
+        width: 74%;
+        margin: 20px auto;
+    }
+</style>
+
+<body>
+    <header class="header">
+        <!-- left for logo -->
+        <div class="left">
+            <img src="img/dumble.png" alt="error">
+            <div>Fitness Club</div>
+        </div>
+        <!-- mid for navi -->
+        <div class="mid">
+            <ul class="navbar">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About us</a></li>
+                <li><a href="#">Fitness Calculator</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </div>
+        <!-- right for botton -->
+        <div class="right">
+            <button class="btn">Call us Now</button>
+            <button class="btn">Email us</button>
+        </div>
+    </header>
+    <div class="container">
+       <h1>Join The Best GYM of Kathmandu now</h1>
+       <form action="noaction.php">
+        <div class="form-group">
+        Name: <input type="text" name="" placeholder="Enter your name">
+        </div>
+       <div class="form-group">
+        Age: <input type="number" name="" placeholder="Enter your Age"> 
+       </div>
+       <div class="form-group">
+        Gender: <input type="text" name="" placeholder="Enter your Gender">
+        </div>
+       <div class="form-group">
+        Location: <input type="text" name="" placeholder="Enter your Location">
+       </div>
+       <div class="form-group">
+        Contact no.: <input type="number" name="" placeholder="Enter your Phone Number">
+       </div>
+       <div class="form-group">
+        Email: <input type="email" name="" placeholder="Enter your Email Id">
+       </div>
+       <button class="btn">Submit Now</button>
+       </form>
+    </div>
+</body>
+
+</html>

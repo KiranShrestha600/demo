@@ -323,7 +323,14 @@ input[type='text']
     padding: 3px 3px;
     outline: none;
 }
-
+.work2
+{
+    display: flex;
+    flex-direction: column;
+}
+.work2,a{
+    text-decoration: none;
+}
     
 /* @media screen and (max-width:1350px)
 {

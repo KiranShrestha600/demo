@@ -330,6 +330,7 @@ input[type='text']
 }
 .work2,a{
     text-decoration: none;
+    font-size: medium;
 }
     
 /* @media screen and (max-width:1350px)

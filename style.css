@@ -41,6 +41,7 @@ body {
 {
     height: 180px;
     width: 180px;
+    overflow: hidden;
 }
 #box2
 {
@@ -55,6 +56,7 @@ body {
     border-radius: 100%;
     height: 300px;
     width: 300px;
+    overflow: hidden;
 }
 #box1
 {
@@ -218,6 +220,7 @@ button
     height: 300px;
     width: 320px;
     border-radius: 10px;
+    overflow: hidden;
 }
 #SERVICES
 {
@@ -247,6 +250,7 @@ button
 #about2 img
 {
     border-radius:10px;
+    overflow: hidden;
     /* box-shadow: 0 0 15px -5px white; */
 }
 #about2
@@ -353,11 +357,13 @@ input
 {
     padding-bottom: 20px;
     cursor: pointer;
+    overflow: hidden;
 }
-.gymimg:hover,.fulkoimg:hover
+.gymimg:hover,.fulkoimg:hover,.KOTimg:hover
 {
     scale: 1.1;
     transition: all 0.3s ease-in-out;
+    overflow: hidden;
 }
 h2{
 color: whitesmoke;

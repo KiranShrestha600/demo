@@ -180,15 +180,15 @@ button
     height: 100vh;  
     align-items: center;
 }
-#HOME h1,#services1 h1,#about1 h1, #work1 h1
+#HOME h1,#services1 h1,#about1 h1, #work1 h1, #contacts h1
 {
     font-size: 48px;
 }
-#HOME h2,#services1 h2,#about1 h2, #work1 h2
+#HOME h2,#services1 h2,#about1 h2, #work1 h2, #contacts h2
 {
     font-size: 38px;
 }
-#HOME h3,#services1 h3,#about1 h3, #work1 h3
+#HOME h3,#services1 h3,#about1 h3, #work1 h3, #contacts h3
 {
     font-size: 21px;
 }
@@ -266,7 +266,7 @@ button
 footer
 {
     display: flex;
-    height: 100px;
+    height: 50px;
     justify-content: center;
     align-items: center;
 }
@@ -291,9 +291,18 @@ footer
     border-bottom: 3px solid black;
     height: 100vh;
 }
+#contacts
+{
+    padding-top: 20px;
+    display: flex;
+    flex-direction:column;
+    height: 78vh;
+    width: 78vw;
+    align-items: center;
+}
 #contact1
 {
-    padding-top: 100px;
+    padding-top: 40px;
     display: flex;
     flex-direction:column;
     height: 78vh;
@@ -302,8 +311,8 @@ footer
 }
 #form{
         display: flex;
-        height: 500px;
-        width: 300px;
+        height: 600px;
+        width: 450px;
         padding-top: 50px;
         justify-content: center;
         border-radius: 10px;
@@ -311,6 +320,7 @@ footer
     }
 form
 {
+    font-size: 21PX;
     display: flex;
     flex-direction: column;
 }
@@ -318,21 +328,41 @@ input[type='submit']
 {
     width: 50px;
 }
-input[type='text']
+input
 {
-    padding: 3px 3px;
+    display: flex;
+    padding: 2px 2px ;
     outline: none;
+    font-size: 21px;
+    
 }
 .work2
 {
+    padding-top: 50px;
     display: flex;
-    flex-direction: column;
 }
 .work2,a{
     text-decoration: none;
     font-size: medium;
 }
-    
+.gym,.fulko
+{
+    padding: 50px;
+}
+.gymimg,.fulkoimg
+{
+    padding-bottom: 20px;
+    cursor: pointer;
+}
+.gymimg:hover,.fulkoimg:hover
+{
+    scale: 1.1;
+    transition: all 0.3s ease-in-out;
+}
+h2{
+color: whitesmoke;
+}
+
 /* @media screen and (max-width:1350px)
 {
     #service{

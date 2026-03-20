@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kusuma Hotel - KOT Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --success: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+      --danger: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    }
+    
+    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    .login-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      animation: slideUp 0.7s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .role-toggle {
+      display: flex;
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 24px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .role-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #6b7280;
+    }
+    
+    .role-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+      transform: translateY(-1px);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+      background: white;
+    }
+    
+    .btn {
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    
+    .dashboard {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 24px;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 20px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+    
+    .order-card {
+      border-left: 5px solid #667eea;
+      transition: all 0.3s ease;
+    }
+    
+    .order-card.new-order { 
+      border-left-color: #f59e0b; 
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 20px rgba(245,158,11,0.3);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+      50% { box-shadow: 0 0 40px rgba(245,158,11,0.6); }
+    }
+    
+    .status-pending { color: #f59e0b; background: #fef3c7; }
+    .status-preparing { color: #3b82f6; background: #dbeafe; }
+    .status-ready { color: #10b981; background: #d1fae5; }
+    .status-delivered { color: #6b7280; background: #f3f4f6; }
+    
+    .chat-messages {
+      height: 400px;
+      overflow-y: auto;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .chat-message {
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .chat-message.me { flex-direction: row-reverse; }
+    .chat-message.me .message-bubble { background: var(--primary); color: white; }
+    
+    .message-bubble {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: all 0.4s ease;
+    }
+    
+    .notification.show { transform: translateX(0); }
+    
+    @media (max-width: 768px) {
+      .dashboard { padding: 16px; }
+      .header, .card { padding: 20px; }
+      .role-toggle { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+  <div class="login-card">
+    <div class="text-center mb-8">
+      <i class="fas fa-utensils text-6xl text-white mb-4 opacity-90"></i>
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">KOT Management</h1>
+      <p class="text-xl text-gray-600">Kitchen Order Ticket System</p>
+    </div>
+    
+    <div class="role-toggle">
+      <button class="role-btn active" onclick="switchRole('counter')">
+        <i class="fas fa-cash-register"></i> Counter
+      </button>
+      <button class="role-btn" onclick="switchRole('kitchen')">
+        <i class="fas fa-fire"></i> Kitchen
+      </button>
+    </div>
+
+    <!-- Counter Login -->
+    <form id="counterLoginForm" onsubmit="handleLogin(event)">
+      <div class="mb-6">
+        <label class="block text-gray-700 font-semibold mb-3">Counter ID</label>
+        <input type="text" class="form-control" id="counterId" placeholder="COUNTER-001" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-full">
+        <i class="fas fa-sign-in-alt"></i> Login to Counter
+      </button>
+    </form>
+
+    <!-- Kitchen Login -->
+    <form id="kitchenLoginForm" onsubmit="handleLogin(event)" style="display: none;">
+      <div class="mb-6">
+        <label class="block text-gray-700 font-semibold mb-3">Kitchen ID</label>
+        <input type="text" class="form-control" id="kitchenId" placeholder="KITCHEN-001" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-full">
+        <i class="fas fa-sign-in-alt"></i> Login to Kitchen
+      </button>
+    </form>
+
+    <div class="text-center mt-6 p-4 bg-blue-50 rounded-xl">
+      <p class="text-sm font-medium text-blue-800 mb-1">Demo Login:</p>
+      <div class="text-xs space-y-1">
+        <span>🔵 Counter: <strong>COUNTER-001</strong></span>
+        <span>🔥 Kitchen: <strong>KITCHEN-001</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Counter Dashboard -->
+<div id="counterDashboard" class="dashboard" style="display: none;">
+  <div class="header">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="fas fa-cash-register text-3xl text-blue-600"></i>
+        Counter Dashboard
+      </h1>
+      <p class="text-gray-600 mt-2" id="counterUser"></p>
+    </div>
+    <div class="flex gap-3">
+      <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold" id="counterOrderCount">0 Orders</span>
+      <button onclick="logout()" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Place New Order -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-plus-circle text-green-600"></i> New Order
+    </h2>
+    <form id="newOrderForm" class="grid grid-cols-1 md:grid-cols-2 gap-6" onsubmit="placeOrder(event)">
+      <div>
+        <label class="block font-semibold mb-3">Table No.</label>
+        <input type="text" class="form-control" id="tableNo" placeholder="T01" required>
+      </div>
+      <div>
+        <label class="block font-semibold mb-3">Customer Name</label>
+        <input type="text" class="form-control" id="customerName" placeholder="John Doe" required>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block font-semibold mb-3">Order Items</label>
+        <textarea class="form-control" id="orderItems" rows="4" placeholder="1x Biryani&#10;2x Naan&#10;1x Chicken Curry" required></textarea>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block font-semibold mb-3">Special Instructions</label>
+        <textarea class="form-control" id="specialNotes" rows="2" placeholder="Less spicy, no onions"></textarea>
+      </div>
+      <button type="submit" class="md:col-span-2 btn btn-success w-full">
+        <i class="fas fa-paper-plane"></i> Send to Kitchen
+      </button>
+    </form>
+  </div>
+
+  <!-- Active Orders -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-list text-blue-600"></i> My Orders 
+      <span class="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold" id="activeOrdersCount">0</span>
+    </h2>
+    <div id="counterOrdersList" class="space-y-4 max-h-96 overflow-y-auto">
+      <!-- Orders will be populated here -->
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-comments text-purple-600"></i> Kitchen Chat
+    </h2>
+    <div id="chatMessages" class="chat-messages"></div>
+    <form id="chatForm" onsubmit="sendMessage(event)" class="flex gap-3">
+      <input type="text" id="chatInput" class="form-control flex-1" placeholder="Type message to kitchen..." maxlength="200">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Kitchen Dashboard -->
+<div id="kitchenDashboard" class="dashboard" style="display: none;">
+  <div class="header">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="fas fa-fire text-3xl text-orange-600"></i>
+        Kitchen Dashboard
+      </h1>
+      <p class="text-gray-600 mt-2" id="kitchenUser"></p>
+    </div>
+    <div class="flex gap-3">
+      <span class="px-4 py-2 bg-orange-100 text-orange-800 rounded-full font-semibold" id="kitchenOrderCount">0 Orders</span>
+      <button onclick="logout()" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- New Orders -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-clock text-yellow-600"></i> New Orders 
+      <span class="ml-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold" id="newOrdersCount">0</span>
+    </h2>
+    <div id="kitchenNewOrders" class="space-y-4 max-h-96 overflow-y-auto">
+      <!-- New orders will appear here -->
+    </div>
+  </div>
+
+  <!-- All Orders -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-list text-green-600"></i> All Orders
+    </h2>
+    <div id="kitchenAllOrders" class="space-y-4 max-h-96 overflow-y-auto">
+      <!-- All orders will be here -->
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+      <i class="fas fa-comments text-purple-600"></i> Counter Chat
+    </h2>
+    <div id="kitchenChatMessages" class="chat-messages"></div>
+    <form id="kitchenChatForm" onsubmit="sendMessage(event)" class="flex gap-3">
+      <input type="text" id="kitchenChatInput" class="form-control flex-1" placeholder="Type message to counter..." maxlength="200">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification bg-green-500 hidden"></div>
+
+<script>
+// Global Data
+let orders = [];
+let messages = [];
+let currentUser = null;
+let currentRole = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
+  loadUserSession(); // ADD THIS LINE
+  updateOrderCounts();
+  setInterval(updateDisplays, 1000); // Changed to 1 second for real-time
+});
+
+// Role switching
+function switchRole(role) {
+  currentRole = role;
+  const counterForm = document.getElementById('counterLoginForm');
+  const kitchenForm = document.getElementById('kitchenLoginForm');
+  const counterBtn = document.querySelector('.role-btn:nth-child(1)');
+  const kitchenBtn = document.querySelector('.role-btn:nth-child(2)');
+
+  if (role === 'counter') {
+    counterForm.style.display = 'block';
+    kitchenForm.style.display = 'none';
+    counterBtn.classList.add('active');
+    kitchenBtn.classList.remove('active');
+  } else {
+    counterForm.style.display = 'none';
+    kitchenForm.style.display = 'block';
+    counterBtn.classList.remove('active');
+    kitchenBtn.classList.add('active');
+  }
+}
+
+// Login handler
+function handleLogin(event) {
+  event.preventDefault();
+  
+  const userId = document.getElementById(currentRole === 'counter' ? 'counterId' : 'kitchenId').value.toUpperCase();
+  
+  if (userId) {
+    currentUser = {
+      id: userId,
+      role: currentRole,
+      joinedAt: new Date().toISOString()
+    };
+    
+    // SAVE USER SESSION
+    localStorage.setItem('kotCurrentUser', JSON.stringify(currentUser));
+    
+    showDashboard();
+    document.getElementById(currentRole === 'counter' ? 'counterUser' : 'kitchenUser').textContent = `Welcome, ${currentUser.id}`;
+    updateDisplays();
+    showNotification(`${currentRole.toUpperCase()} logged in successfully!`, 'bg-green-500');
+  }
+}
+
+// Show appropriate dashboard
+function showDashboard() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('counterDashboard').style.display = currentRole === 'counter' ? 'block' : 'none';
+  document.getElementById('kitchenDashboard').style.display = currentRole === 'kitchen' ? 'block' : 'none';
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem('kotCurrentUser');
+  currentUser = null;
+  currentRole = null;
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('counterDashboard').style.display = 'none';
+  document.getElementById('kitchenDashboard').style.display = 'none';
+  document.getElementById('counterLoginForm').reset();
+  document.getElementById('kitchenLoginForm').reset();
+  switchRole('counter');
+}
+
+// Place new order (Counter)
+function placeOrder(event) {
+  event.preventDefault();
+  
+  const order = {
+    id: Date.now(),
+    tableNo: document.getElementById('tableNo').value,
+    customerName: document.getElementById('customerName').value,
+    items: document.getElementById('orderItems').value,
+    specialNotes: document.getElementById('specialNotes').value || 'None',
+    status: 'pending',
+    counterId: currentUser.id,
+    timestamp: new Date().toISOString(),
+    timePlaced: new Date().toLocaleTimeString()
+  };
+
+  orders.unshift(order); // Add to beginning for newest first
+  document.getElementById('newOrderForm').reset();
+  
+  saveData();
+  broadcastUpdate(); // Notify other tabs/users
+  updateDisplays();
+  showNotification(`Order #${order.id} sent to kitchen!`, 'bg-blue-500');
+  
+  // Auto-scroll to top
+  document.getElementById('counterOrdersList').scrollTop = 0;
+}
+
+// Update order status (Kitchen)
+function updateOrderStatus(orderId, newStatus) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    order.status = newStatus;
+    order.lastUpdated = new Date().toISOString();
+    
+    if (newStatus === 'ready') {
+      order.readyTime = new Date().toLocaleTimeString();
+    }
+    
+    saveData();
+    broadcastUpdate(); // Notify other tabs/users immediately
+    updateDisplays();
+    showNotification(`Order #${orderId} marked as ${newStatus}!`, 'bg-orange-500');
+  }
+}
+
+// Delete order
+function deleteOrder(orderId) {
+  if (confirm('Delete this order?')) {
+    orders = orders.filter(o => o.id !== orderId);
+    saveData();
+    updateDisplays();
+  }
+}
+
+// Main display update function
+function updateDisplays() {
+  if (currentRole === 'counter') {
+    updateCounterDisplay();
+  } else if (currentRole === 'kitchen') {
+    updateKitchenDisplay();
+  }
+  updateOrderCounts();
+  updateChat();
+}
+// Real-time broadcast (simulates WebSocket)
+function broadcastUpdate() {
+  // Save data immediately for other tabs/users
+  saveData();
+  
+  // Trigger updates across all tabs
+  window.dispatchEvent(new CustomEvent('kotDataUpdate'));
+}
+
+// Listen for updates from other tabs
+window.addEventListener('kotDataUpdate', () => {
+  loadData();
+  updateDisplays();
+});
+
+// Update Counter Display
+  // Update Counter Display (ENHANCED)
+function updateCounterDisplay() {
+  const container = document.getElementById('counterOrdersList');
+  container.innerHTML = '';
+
+  const userOrders = orders.filter(o => o.counterId === currentUser.id);
+  
+  if (userOrders.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-inbox text-5xl mb-4"></i><p class="text-xl">No orders yet</p></div>';
+    return;
+  }
+
+  // Sort by newest first, then by status priority
+  userOrders.sort((a, b) => {
+    const statusPriority = { 'pending': 0, 'preparing': 1, 'ready': 2, 'delivered': 3 };
+    const aPriority = statusPriority[a.status] || 3;
+    const bPriority = statusPriority[b.status] || 3;
+    
+    if (aPriority !== bPriority) return aPriority - bPriority;
+    return b.id - a.id; // Newest first within same status
+  });
+
+  userOrders.forEach(order => {
+    const statusIcon = getStatusIcon(order.status);
+    const statusClass = getStatusClass(order.status);
+    const isNewUpdate = order.lastUpdated && 
+      new Date(order.lastUpdated) > new Date(Date.now() - 30000); // Updated in last 30 seconds
+    
+    const orderCard = `
+      <div class="order-card p-6 rounded-2xl border shadow-lg transition-all duration-300 
+                  ${order.status === 'pending' ? 'new-order' : ''} 
+                  ${order.status === 'ready' ? 'border-l-green-500 border-l-8' : ''}
+                  ${order.status === 'delivered' ? 'opacity-60 border-l-gray-400 border-l-8' : ''}
+                  ${isNewUpdate ? 'ring-4 ring-yellow-300 ring-opacity-50 animate-pulse' : ''}">
+        
+        <!-- Status Header with animation -->
+        <div class="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-100">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-1">#${order.id}</h3>
+            <div class="flex items-center gap-3 text-lg">
+              <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full font-semibold">
+                Table: ${order.tableNo}
+              </span>
+              <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full font-semibold">
+                ${order.customerName}
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <span class="px-6 py-3 ${statusClass} text-sm font-bold rounded-xl shadow-lg transform -rotate-3 scale-110">
+              ${statusIcon} ${order.status.toUpperCase()}
+            </span>
+            ${order.lastUpdated ? `
+              <span class="text-xs text-green-600 font-semibold bg-green-100 px-2 py-1 rounded-full animate-pulse">
+                <i class="fas fa-sync-alt mr-1"></i>Updated just now
+              </span>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Order Details -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div>
+            <p class="font-bold text-lg mb-3 text-gray-800 flex items-center gap-2">
+              <i class="fas fa-utensils text-orange-500"></i>Order Items
+            </p>
+            <div class="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl border-2 border-gray-200">
+              <pre class="text-sm whitespace-pre-wrap font-mono">${order.items}</pre>
+            </div>
+          </div>
+          
+          <!-- Status Timeline -->
+          <div>
+            <p class="font-bold text-lg mb-3 text-gray-800 flex items-center gap-2">
+              <i class="fas fa-chart-line text-blue-500"></i>Status Timeline
+            </p>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                  📅
+                </div>
+                <div>
+                  <div class="font-semibold text-sm">Placed</div>
+                  <div class="text-xs text-gray-500">${order.timePlaced}</div>
+                </div>
+              </div>
+              
+              ${order.lastUpdated ? `
+                <div class="flex items-center gap-3 p-3 bg-orange-50 rounded-xl border-l-4 border-orange-400">
+                  <div class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    ${getStatusIcon(order.status).match(/fas fa-(\w+)/)[1] === 'fire' ? '🔥' : '✅'}
+                  </div>
+                  <div>
+                    <div class="font-semibold text-sm">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+                    <div class="text-xs text-gray-500">${new Date(order.lastUpdated).toLocaleTimeString()}</div>
+                  </div>
+                </div>
+              ` : ''}
+              
+              ${order.readyTime ? `
+                <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border-l-4 border-green-400">
+                  <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    ✅
+                  </div>
+                  <div>
+                    <div class="font-semibold text-sm">Ready for Delivery</div>
+                    <div class="text-xs text-gray-500">${order.readyTime}</div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Special Notes -->
+        ${order.specialNotes !== 'None' ? `
+          <div class="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-2xl mb-6">
+            <p class="font-bold text-lg mb-2 text-orange-800 flex items-center gap-2">
+              <i class="fas fa-exclamation-triangle"></i>Special Instructions
+            </p>
+            <p class="text-sm bg-white p-4 rounded-xl border-l-4 border-orange-400">${order.specialNotes}</p>
+          </div>
+        ` : ''}
+
+        <!-- Action Buttons & Timestamps -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+          <div class="flex-1 text-xs text-gray-500 space-y-1">
+            <div class="flex items-center gap-4">
+              <span>👤 Counter: ${order.counterId}</span>
+              ${order.readyTime ? `<span>✅ Ready: ${order.readyTime}</span>` : ''}
+            </div>
+          </div>
+          ${order.status !== 'delivered' ? `
+            <div class="flex gap-2">
+              <button onclick="notifyCustomer(${order.id})" class="btn btn-success text-sm px-4 py-2 flex-1">
+                <i class="fas fa-bell"></i> Notify Customer
+              </button>
+              <button onclick="printOrder(${order.id})" class="btn btn-primary text-sm px-4 py-2 flex-1">
+                <i class="fas fa-print"></i> Print
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    container.innerHTML += orderCard;
+  });
+
+  // Auto-scroll to show most urgent orders (pending/preparing first)
+  // container.scrollTop = 0;
+}
+
+// Add these new helper functions
+function notifyCustomer(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    showNotification(`Customer notified for Order #${orderId} - Table ${order.tableNo}`, 'bg-green-500');
+  }
+}
+
+function printOrder(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    showNotification(`Printing Order #${orderId}...`, 'bg-blue-500');
+    // You can add actual print functionality here
+    console.log('Print order:', order);
+  }
+}
+
+// Enhanced status update function to notify counter immediately
+function updateOrderStatus(orderId, newStatus) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    const oldStatus = order.status;
+    order.status = newStatus;
+    order.lastUpdated = new Date().toISOString();
+    
+    if (newStatus === 'ready') {
+      order.readyTime = new Date().toLocaleTimeString();
+    }
+    
+    saveData();
+    updateDisplays();
+    
+    // Special notifications for counter
+    let notificationMsg = `Order #${orderId} → ${newStatus.toUpperCase()}`;
+    let bgColor = 'bg-orange-500';
+    
+    if (newStatus === 'ready' && oldStatus !== 'ready') {
+      notificationMsg = `🎉 Order #${orderId} READY for Table ${order.tableNo}!`;
+      bgColor = 'bg-green-500';
+      // Play notification sound (optional)
+      playNotificationSound();
+    } else if (newStatus === 'delivered') {
+      notificationMsg = `✅ Order #${orderId} delivered!`;
+      bgColor = 'bg-emerald-500';
+    }
+    
+    showNotification(notificationMsg, bgColor);
+  }
+}
+
+// Optional: Add notification sound
+function playNotificationSound() {
+  // Create a simple beep sound
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = 800;
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+function playNewOrderSound() {
+  // Distinct new order sound (lower pitch, longer)
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = 600; // Lower pitch for new orders
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.8);
+}
+
+
+// Update Kitchen Display
+function updateKitchenDisplay() {
+  const wasEmpty = document.getElementById('kitchenNewOrders').innerHTML.includes('No orders');
+  updateKitchenOrdersList('kitchenNewOrders', ['pending']);
+  updateKitchenOrdersList('kitchenAllOrders', ['pending', 'preparing', 'ready', 'delivered']);
+  
+  // CHECK FOR NEW ORDERS AND PLAY SOUND
+  const newOrders = orders.filter(o => o.status === 'pending');
+  const nowEmpty = document.getElementById('kitchenNewOrders').innerHTML.includes('No orders');
+  
+  if (!wasEmpty && nowEmpty) {
+    // Orders cleared - no sound
+  } else if (currentRole === 'kitchen' && newOrders.length > 0) {
+    const latestOrder = newOrders[0];
+    const orderTime = new Date(latestOrder.timestamp);
+    if (Date.now() - orderTime.getTime() < 2000) { // New order in last 2 seconds
+      playNewOrderSound();
+      showNotification(`🔔 NEW ORDER #${latestOrder.id} - Table ${latestOrder.tableNo}`, 'bg-red-500');
+    }
+  }
+}
+
+function updateKitchenOrdersList(containerId, statuses) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  const filteredOrders = orders.filter(o => statuses.includes(o.status));
+  
+  if (filteredOrders.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-inbox text-5xl mb-4"></i><p class="text-xl">No orders</p></div>';
+    return;
+  }
+
+  filteredOrders.slice(0, 10).forEach(order => { // Show max 10 orders
+    const statusIcon = getStatusIcon(order.status);
+    const statusClass = getStatusClass(order.status);
+    
+    const orderCard = `
+      <div class="order-card p-6 rounded-2xl border shadow-lg ${order.status === 'pending' ? 'new-order' : ''}">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-xl font-bold text-gray-800">#${order.id}</h3>
+            <p class="text-lg text-gray-600">Table ${order.tableNo} | ${order.customerName}</p>
+          </div>
+          <span class="px-4 py-2 ${statusClass} text-sm font-bold rounded-full">
+            ${statusIcon} ${order.status.toUpperCase()}
+          </span>
+        </div>
+        <div class="mb-6">
+          <p class="font-semibold mb-2">Order Items:</p>
+          <pre class="bg-gray-50 p-4 rounded-lg text-sm whitespace-pre-wrap">${order.items}</pre>
+          ${order.specialNotes !== 'None' ? `
+            <div class="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+              <p class="font-semibold text-yellow-800 mb-1">Special Notes:</p>
+              <p class="text-sm">${order.specialNotes}</p>
+            </div>
+          ` : ''}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${order.status === 'pending' ? `
+            <button onclick="updateOrderStatus(${order.id}, 'preparing')" class="btn btn-primary text-sm px-4 py-2">
+              <i class="fas fa-play"></i> Start
+            </button>
+          ` : ''}
+          ${order.status === 'preparing' ? `
+            <button onclick="updateOrderStatus(${order.id}, 'ready')" class="btn btn-success text-sm px-4 py-2">
+              <i class="fas fa-check"></i> Mark Ready
+            </button>
+            <button onclick="updateOrderStatus(${order.id}, 'delivered')" class="btn btn-danger text-sm px-4 py-2">
+              <i class="fas fa-shipping-fast"></i> Delivered
+            </button>
+          ` : ''}
+          ${order.status !== 'pending' ? `
+            <button onclick="updateOrderStatus(${order.id}, 'delivered')" class="btn btn-danger text-sm px-4 py-2">
+              <i class="fas fa-shipping-fast"></i> Delivered
+            </button>
+          ` : ''}
+          <button onclick="deleteOrder(${order.id})" class="btn btn-danger text-sm px-4 py-2">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500 flex justify-between">
+          <span>From: ${order.counterId}</span>
+          <span>${order.timePlaced}</span>
+        </div>
+      </div>
+    `;
+    container.innerHTML += orderCard;
+  });
+}
+
+// Status helpers
+function getStatusIcon(status) {
+  const icons = {
+    'pending': '<i class="fas fa-clock"></i>',
+    'preparing': '<i class="fas fa-fire"></i>',
+    'ready': '<i class="fas fa-check-circle"></i>',
+    'delivered': '<i class="fas fa-truck"></i>'
+  };
+  return icons[status] || '';
+}
+
+function getStatusClass(status) {
+  const classes = {
+    'pending': 'status-pending bg-yellow-100 text-yellow-800',
+    'preparing': 'status-preparing bg-blue-100 text-blue-800',
+    'ready': 'status-ready bg-green-100 text-green-800',
+    'delivered': 'status-delivered bg-gray-100 text-gray-800'
+  };
+  return classes[status] || 'status-pending';
+}
+
+// Update order counts
+function updateOrderCounts() {
+  const totalOrders = orders.length;
+  document.getElementById('counterOrderCount').textContent = `${totalOrders} Orders`;
+  document.getElementById('kitchenOrderCount').textContent = `${totalOrders} Orders`;
+  
+  const newOrders = orders.filter(o => o.status === 'pending').length;
+  document.getElementById('newOrdersCount').textContent = `${newOrders}`;
+  document.getElementById('activeOrdersCount').textContent = `${orders.filter(o => o.counterId === currentUser?.id).length}`;
+}
+
+// Chat functionality
+function updateChat() {
+  const counterMessages = document.getElementById('chatMessages');
+  const kitchenMessages = document.getElementById('kitchenChatMessages');
+  
+  counterMessages.innerHTML = '';
+  kitchenMessages.innerHTML = '';
+  
+  messages.slice(-20).forEach(msg => { // Show last 20 messages
+    const messageHtml = `
+      <div class="chat-message ${msg.fromRole === 'counter' ? 'me' : ''}">
+        <div class="w-8 h-8 bg-${msg.fromRole === 'counter' ? 'purple' : 'blue'}-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          ${msg.fromRole === 'counter' ? 'C' : 'K'}
+        </div>
+        <div class="message-bubble">
+          <div class="font-semibold text-sm mb-1">${msg.fromId}: ${msg.timestamp}</div>
+          <div>${msg.text}</div>
+        </div>
+      </div>
+    `;
+    
+    if (currentRole === 'counter') {
+      counterMessages.innerHTML += messageHtml;
+    } else {
+      kitchenMessages.innerHTML += messageHtml;
+    }
+  });
+  
+  // Auto-scroll to bottom
+  counterMessages.scrollTop = counterMessages.scrollHeight;
+  kitchenMessages.scrollTop = kitchenMessages.scrollHeight;
+}
+
+function sendMessage(event) {
+  event.preventDefault();
+  
+  const inputId = currentRole === 'counter' ? 'chatInput' : 'kitchenChatInput';
+  const message = document.getElementById(inputId).value.trim();
+  
+  if (message) {
+    const chatMessage = {
+      id: Date.now(),
+      fromId: currentUser.id,
+      fromRole: currentRole,
+      text: message,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    
+    messages.push(chatMessage);
+    document.getElementById(inputId).value = '';
+    
+    saveData();
+    broadcastUpdate(); // Notify other tabs/users immediately
+    updateChat();
+    showNotification('Message sent!', 'bg-purple-500');
+  }
+}
+
+// Notifications
+function showNotification(message, bgColor) {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = `notification ${bgColor} show`;
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 4000);
+}
+
+// Data persistence
+function saveData() {
+  localStorage.setItem('kotOrders', JSON.stringify(orders));
+  localStorage.setItem('kotMessages', JSON.stringify(messages));
+}
+
+function loadData() {
+  const savedOrders = localStorage.getItem('kotOrders');
+  const savedMessages = localStorage.getItem('kotMessages');
+  
+  if (savedOrders) orders = JSON.parse(savedOrders);
+  if (savedMessages) messages = JSON.parse(savedMessages);
+}
+function loadUserSession() {
+  const savedUser = localStorage.getItem('kotCurrentUser');
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+    currentRole = currentUser.role;
+    showDashboard();
+    document.getElementById(currentRole === 'counter' ? 'counterUser' : 'kitchenUser').textContent = `Welcome, ${currentUser.id}`;
+    updateDisplays();
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') {
+    document.getElementById(currentRole === 'counter' ? 'chatForm' : 'kitchenChatForm').dispatchEvent(new Event('submit'));
+  }
+});
+// Keep synced even when tab is backgrounded
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    loadData();
+    updateDisplays();
+  }
+});
+</script>

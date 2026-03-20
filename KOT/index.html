@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kusuma Hotel - KOT Management System</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase Realtime Database -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
@@ -377,7 +380,30 @@
 
 <!-- Notification -->
 <div id="notification" class="notification bg-green-500 hidden"></div>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
 
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB5Ij2KKLjb9LTp0wndtJUVColN4ql4XuY",
+    authDomain: "kot-system-e062c.firebaseapp.com",
+    projectId: "kot-system-e062c",
+    storageBucket: "kot-system-e062c.firebasestorage.app",
+    messagingSenderId: "825927930109",
+    appId: "1:825927930109:web:0fcb370629907d39722e94",
+    measurementId: "G-TT3KS94LKL"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 <script>
 // Global Data
 let orders = [];
@@ -387,10 +413,9 @@ let currentRole = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-  loadData();
-  loadUserSession(); // ADD THIS LINE
+  loadUserSession(); // Keep local login persistence
   updateOrderCounts();
-  setInterval(updateDisplays, 1000); // Changed to 1 second for real-time
+  // 🔥 NO setInterval NEEDED - Firebase is real-time!
 });
 
 // Role switching
@@ -426,11 +451,13 @@ function handleLogin(event) {
       role: currentRole,
       joinedAt: new Date().toISOString()
     };
-    
-    // SAVE USER SESSION
-    localStorage.setItem('kotCurrentUser', JSON.stringify(currentUser));
-    
+        
     showDashboard();
+    // Show online status
+onlineUsersRef.child(currentUser.id).set({
+  role: currentRole,
+  connectedAt: new Date().toISOString()
+});
     document.getElementById(currentRole === 'counter' ? 'counterUser' : 'kitchenUser').textContent = `Welcome, ${currentUser.id}`;
     updateDisplays();
     showNotification(`${currentRole.toUpperCase()} logged in successfully!`, 'bg-green-500');
@@ -446,7 +473,6 @@ function showDashboard() {
 
 // Logout
 function logout() {
-  localStorage.removeItem('kotCurrentUser');
   currentUser = null;
   currentRole = null;
   document.getElementById('loginPage').style.display = 'flex';
@@ -454,6 +480,7 @@ function logout() {
   document.getElementById('kitchenDashboard').style.display = 'none';
   document.getElementById('counterLoginForm').reset();
   document.getElementById('kitchenLoginForm').reset();
+  onlineUsersRef.child(currentUser.id).remove();
   switchRole('counter');
 }
 
@@ -462,7 +489,7 @@ function placeOrder(event) {
   event.preventDefault();
   
   const order = {
-    id: Date.now(),
+    id: Date.now().toString(), // 🔥 STRING for Firebase keys
     tableNo: document.getElementById('tableNo').value,
     customerName: document.getElementById('customerName').value,
     items: document.getElementById('orderItems').value,
@@ -473,16 +500,9 @@ function placeOrder(event) {
     timePlaced: new Date().toLocaleTimeString()
   };
 
-  orders.unshift(order); // Add to beginning for newest first
   document.getElementById('newOrderForm').reset();
-  
-  saveData();
-  broadcastUpdate(); // Notify other tabs/users
-  updateDisplays();
+  saveOrder(order); // 🔥 USES FIREBASE
   showNotification(`Order #${order.id} sent to kitchen!`, 'bg-blue-500');
-  
-  // Auto-scroll to top
-  document.getElementById('counterOrdersList').scrollTop = 0;
 }
 
 // Update order status (Kitchen)
@@ -496,8 +516,6 @@ function updateOrderStatus(orderId, newStatus) {
       order.readyTime = new Date().toLocaleTimeString();
     }
     
-    saveData();
-    broadcastUpdate(); // Notify other tabs/users immediately
     updateDisplays();
     showNotification(`Order #${orderId} marked as ${newStatus}!`, 'bg-orange-500');
   }
@@ -506,9 +524,7 @@ function updateOrderStatus(orderId, newStatus) {
 // Delete order
 function deleteOrder(orderId) {
   if (confirm('Delete this order?')) {
-    orders = orders.filter(o => o.id !== orderId);
-    saveData();
-    updateDisplays();
+    ordersRef.child(orderId.toString()).remove(); // 🔥 FIREBASE DELETE
   }
 }
 
@@ -522,18 +538,9 @@ function updateDisplays() {
   updateOrderCounts();
   updateChat();
 }
-// Real-time broadcast (simulates WebSocket)
-function broadcastUpdate() {
-  // Save data immediately for other tabs/users
-  saveData();
-  
-  // Trigger updates across all tabs
-  window.dispatchEvent(new CustomEvent('kotDataUpdate'));
-}
 
 // Listen for updates from other tabs
 window.addEventListener('kotDataUpdate', () => {
-  loadData();
   updateDisplays();
 });
 
@@ -719,7 +726,6 @@ function updateOrderStatus(orderId, newStatus) {
       order.readyTime = new Date().toLocaleTimeString();
     }
     
-    saveData();
     updateDisplays();
     
     // Special notifications for counter
@@ -943,19 +949,15 @@ function sendMessage(event) {
   
   if (message) {
     const chatMessage = {
-      id: Date.now(),
+      id: Date.now().toString(),
       fromId: currentUser.id,
       fromRole: currentRole,
       text: message,
       timestamp: new Date().toLocaleTimeString()
     };
     
-    messages.push(chatMessage);
     document.getElementById(inputId).value = '';
-    
-    saveData();
-    broadcastUpdate(); // Notify other tabs/users immediately
-    updateChat();
+    saveMessage(chatMessage); // 🔥 USES FIREBASE
     showNotification('Message sent!', 'bg-purple-500');
   }
 }
@@ -972,27 +974,69 @@ function showNotification(message, bgColor) {
 }
 
 // Data persistence
-function saveData() {
-  localStorage.setItem('kotOrders', JSON.stringify(orders));
-  localStorage.setItem('kotMessages', JSON.stringify(messages));
+// 🔥 FIREBASE REAL-TIME SYNC
+let ordersRef = db.ref('kot_orders');
+let messagesRef = db.ref('kot_messages');
+let onlineUsersRef = db.ref('online_users');
+
+// Listen for orders (REAL-TIME)
+ordersRef.on('value', (snapshot) => {
+  orders = snapshot.val() || [];
+  updateDisplays();
+});
+
+// Listen for messages (REAL-TIME)
+messagesRef.on('value', (snapshot) => {
+  messages = snapshot.val() || [];
+  updateChat();
+});
+
+// Listen for online users
+onlineUsersRef.on('value', (snapshot) => {
+  // Show who's online (optional)
+});
+
+// SAVE ORDER (syncs to ALL devices instantly)
+function saveOrder(order) {
+  const newOrderRef = ordersRef.push();
+  newOrderRef.set(order);
 }
 
-function loadData() {
-  const savedOrders = localStorage.getItem('kotOrders');
-  const savedMessages = localStorage.getItem('kotMessages');
-  
-  if (savedOrders) orders = JSON.parse(savedOrders);
-  if (savedMessages) messages = JSON.parse(savedMessages);
-}
-function loadUserSession() {
-  const savedUser = localStorage.getItem('kotCurrentUser');
-  if (savedUser) {
-    currentUser = JSON.parse(savedUser);
-    currentRole = currentUser.role;
-    showDashboard();
-    document.getElementById(currentRole === 'counter' ? 'counterUser' : 'kitchenUser').textContent = `Welcome, ${currentUser.id}`;
-    updateDisplays();
+// UPDATE ORDER STATUS (syncs instantly)
+function updateOrderStatus(orderId, newStatus) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    const oldStatus = order.status;
+    order.status = newStatus;
+    order.lastUpdated = new Date().toISOString();
+    
+    if (newStatus === 'ready') {
+      order.readyTime = new Date().toLocaleTimeString();
+    }
+    
+    // UPDATE IN FIREBASE
+    ordersRef.child(orderId.toString()).update({
+      status: newStatus,
+      lastUpdated: order.lastUpdated,
+      readyTime: order.readyTime
+    });
+    
+    // Special notifications
+    let notificationMsg = `Order #${orderId} → ${newStatus.toUpperCase()}`;
+    let bgColor = 'bg-orange-500';
+    
+    if (newStatus === 'ready' && oldStatus !== 'ready') {
+      notificationMsg = `🎉 Order #${orderId} READY for Table ${order.tableNo}!`;
+      bgColor = 'bg-green-500';
+      playNotificationSound();
+    }
+    showNotification(notificationMsg, bgColor);
   }
+}
+
+// SAVE MESSAGE (syncs instantly)
+function saveMessage(chatMessage) {
+  messagesRef.push(chatMessage);
 }
 
 // Keyboard shortcuts
@@ -1004,7 +1048,6 @@ document.addEventListener('keydown', function(e) {
 // Keep synced even when tab is backgrounded
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) {
-    loadData();
     updateDisplays();
   }
 });

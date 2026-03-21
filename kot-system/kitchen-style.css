@@ -1,0 +1,408 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.kitchen-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 25px;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.notifications {
+    background: rgba(255,255,255,0.2);
+    padding: 15px 25px;
+    border-radius: 50px;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 1.2em;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s infinite;
+}
+
+#newOrdersCount {
+    background: #f1c40f;
+    color: #2c3e50;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 30px;
+    display: inline-block;
+    text-align: center;
+}
+
+#soundIndicator {
+    width: 12px;
+    height: 12px;
+    background: #2ecc71;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+    animation: blink 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+    padding: 30px;
+}
+
+.order-section {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.order-section.pending {
+    border-color: #e74c3c;
+    background: linear-gradient(135deg, rgba(231,76,60,0.1) 0%, rgba(255,255,255,0.95) 100%);
+}
+
+.order-section.preparing {
+    border-color: #f39c12;
+    background: linear-gradient(135deg, rgba(243,156,18,0.1) 0%, rgba(255,255,255,0.95) 100%);
+}
+
+/* REPLACE the existing .order-section.ready rule with this: */
+.order-section.ready {
+    border-color: #27ae60;
+    background: linear-gradient(135deg, rgba(39,174,96,0.1) 0%, rgba(255,255,255,0.95) 100%);
+    max-height: 600px;  /* FIXED HEIGHT */
+    overflow-y: auto;   /* SCROLLABLE */
+    padding-right: 15px; /* Space for scrollbar */
+}
+
+/* ADD this new rule for smooth scrolling */
+.order-section.ready::-webkit-scrollbar {
+    width: 8px;
+}
+
+.order-section.ready::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.5);
+    border-radius: 10px;
+}
+
+.order-section.ready::-webkit-scrollbar-thumb {
+    background: rgba(39,174,96,0.6);
+    border-radius: 10px;
+}
+
+.order-section.ready::-webkit-scrollbar-thumb:hover {
+    background: rgba(39,174,96,0.8);
+}
+
+.order-section h2 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #2c3e50;
+}
+
+.kitchen-order-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-left: 6px solid #e74c3c;
+    animation: slideIn 0.5s ease-out;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kitchen-order-card.preparing { border-left-color: #f39c12; }
+.kitchen-order-card.ready { border-left-color: #27ae60; transform: scale(1.02); }
+
+.kitchen-order-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.order-id {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.order-status {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9em;
+    text-transform: uppercase;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-preparing { background: #ffeaa7; color: #d68910; }
+.status-ready { background: #d5f4e6; color: #27ae60; }
+
+.customer-info {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.items-list {
+    margin-bottom: 20px;
+}
+
+.kitchen-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+    flex: 1;
+    min-width: 120px;
+}
+
+.btn-preparing {
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.btn-ready {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.timestamp {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    text-align: right;
+    margin-top: 10px;
+}
+
+.chat-section {
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 30px;
+    border-radius: 20px;
+    color: white;
+}
+
+.chat-section h2 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+#kitchenChat {
+    background: rgba(255,255,255,0.95);
+    color: #2c3e50;
+    height: 250px;
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 12px;
+    border-left: 5px solid #667eea;
+}
+
+.chat-input {
+    display: flex;
+    gap: 15px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.chat-input button {
+    padding: 15px 25px;
+    background: white;
+    color: #764ba2;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.chat-input button:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .status-buttons {
+        flex-direction: column;
+    }
+}
+/* ADD at the end of kitchen-style.css */
+/* REPLACE history section styles */
+.order-section.history {
+    border-color: #95a5a6;
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, rgba(236, 240, 241, 0.8) 0%, rgba(255,255,255,0.95) 100%);
+    margin-top: 20px;
+}
+
+.order-section.history h2 {
+    color: #7f8c8d;
+    font-size: 1.5em;
+}
+
+/* PERFECT SCROLLBAR */
+.history-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-scroll::-webkit-scrollbar-track {
+    background: rgba(189, 195, 199, 0.3);
+    border-radius: 10px;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+    background: rgba(149, 165, 166, 0.7);
+    border-radius: 10px;
+}
+
+.history-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(149, 165, 166, 0.9);
+}
+
+.history-item {
+    margin-bottom: 12px !important;
+    border: 1px solid #ecf0f1 !important;
+}
+
+.history-item:hover {
+    opacity: 1 !important;
+    transform: scale(1.02);
+}
+.kitchen-order-card.completed {
+    border-left-color: #95a5a6 !important;
+}
+
+.status-completed {
+    background: #bdc3c7 !important;
+    color: #2c3e50 !important;
+}
+/* ADD at end - Clear button perfection */
+#clearHistoryBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231,76,60,0.4) !important;
+}
+
+#clearHistoryBtn:active {
+    transform: translateY(0);
+}
+
+.history {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}

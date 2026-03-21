@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel KOT - Counter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Hotel KOT System - Counter</h1>
+            <div class="status-indicator">
+                <span id="connectionStatus" class="disconnected">Disconnected</span>
+            </div>
+        </header>
+
+        <!-- Order Form -->
+        <div class="order-form">
+            <h2>📝 New Order</h2>
+            <div class="form-grid">
+                <input type="text" id="tableNo" placeholder="Table No" maxlength="10">
+                <input type="text" id="customerName" placeholder="Customer Name">
+                <input type="number" id="persons" placeholder="Persons" min="1">
+            </div>
+            <div class="items-section">
+                <h3>Items:</h3>
+                <div class="item-input">
+                    <input type="text" id="itemName" placeholder="Item name">
+                    <input type="number" id="itemQty" placeholder="Qty" min="1">
+                    <button onclick="addItem()">➕ Add Item</button>
+                </div>
+                <div id="orderItems" class="order-items"></div>
+            </div>
+            <button class="send-btn" onclick="sendOrder()">🚀 Send to Kitchen</button>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-section">
+            <h2>📋 Active Orders</h2>
+            <div id="ordersList" class="orders-list"></div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="chat-section">
+            <h2>💬 Kitchen Chat</h2>
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chatMessage" placeholder="Type message to kitchen...">
+                <button onclick="sendChat()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
